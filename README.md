@@ -26,7 +26,7 @@ npm install
 
 
 ## build.gradle added script
-Please see on cordova/platform/app/build.gradle for correction integration on gradle
+Please see on cordova/platform/android/app/build.gradle for correction integration on gradle
 ```
                   repositories {
                       maven {
@@ -64,9 +64,9 @@ Please see on cordova/platform/app/build.gradle for correction integration on gr
 
 ## SOURCE CODE PROJECT
 
-Please check the source code on and find function take_selfie
+Please check the source code on `scr/page/home.f7` and find function `take_selfie`
+Note : I add some comment on home.f7
 
-* scr/page/home.f7
  
 
 ## Vite
