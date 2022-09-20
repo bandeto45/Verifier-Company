@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin xmlns:android="http://schemas.android.com/apk/res/android" id="ai.advance.liveness"
+    version="1.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0">
+    <js-module name="LivenessDetectionPlugin" src="www/LivenessDetectionPlugin.js">
+        <clobbers target="cordova.plugins.LivenessDetectionPlugin" />
+    </js-module>
+    <name>LivenessDetectionPlugin</name>
+    <platform name="android">
+        <config-file parent="/*" target="res/xml/config.xml">
+            <feature name="LivenessDetectionPlugin">
+                <param name="android-package" value="ai.advance.liveness.LivenessDetectionPlugin" />
+            </feature>
+        </config-file>
+        <config-file parent="/*" target="AndroidManifest.xml"></config-file>
+    </platform>
+</plugin>

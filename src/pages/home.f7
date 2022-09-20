@@ -1,0 +1,170 @@
+<template>
+  <div class="page" data-name="book">
+    <div class="navbar  navbar-style-1">
+      <div class="navbar-inner">
+            <div class="left">
+              
+              <a  class="link cus back" style="width: auto; min-width: auto;">
+                <span class="material-symbols">
+                arrow_back
+                </span>
+              </a>
+            </div>
+              <div class="title  ">
+                
+                
+              </div>
+              <div class="right" >
+                  <a @click="${()=>navigator.app.exitApp()}" class="link cus back" style="width: auto; min-width: auto;">
+                      <span class="material-symbols">
+                      info
+                      </span>
+                    </a>
+              </div>
+          </div>
+    </div>
+    <!-- Scrollable page content-->
+    <div class="page-content pt-60">
+        <div class="card  position-fixed z-index-0 no-margin no-shadow border-bottom-style-1 bg-color-primary" style="">
+          <div class="container pt-50 pb-50">
+              <h2 class="no-margin-bottom text-color-white">ID Verification</h2>
+              <p class="text-color-white op6 pt-30 no-margin">
+                  In order to check if is you, we need to verify your ID and matches into your selfie. As a part of KYC requirement of the client.
+              </p>
+              <p class="text-color-white op6 pt-30 no-margin">
+                  You just need to do some steps which will help us to make secure verification.
+              </p>
+          </div>
+        </div>
+        <div class="container margin-top pt-30">
+          <div class="card border-bottom-5 border-color-primary no-margin margin-bottom no-shadow card-outline">
+              <div class="padding">
+                  <div class="row">
+                      <div class="col-expand">
+                          <p class="no-margin fs-16 fw6 text-color-primary">1. Scan Your ID</p>
+                          <p class="no-margin fs-13">
+                              Please make sure your uploading document is readable and fit all information on captured photo.
+                          </p>
+                      </div>
+                      <div class="margin-left-half col-auto">
+                          <span class="material-symbols op5 text-color-primary" style="font-size: 50px;">
+                          document_scanner
+                          </span>
+                      </div>
+                  </div>
+                 
+              </div>
+          </div>
+          <div class="card border-bottom-5 border-color-primary no-margin margin-bottom no-shadow card-outline">
+              <div class="padding">
+                  <div class="row">
+                      <div class="col-expand">
+                          <p class="no-margin fs-16 fw6 text-color-primary">2. Take a Selfie</p>
+                          <p class="no-margin fs-13">
+                             To provide some good quality please use plain wall as background.
+                          </p>
+                      </div>
+                      <div class="margin-left-half col-auto">
+                          <span class="material-symbols op7 text-color-deeporange" style="font-size: 50px;">
+                          camera_front
+                          </span>
+                      </div>
+                  </div>
+              </div>
+              <a @click="${action.take_selfie}" id='button-selfie' class="card-link link"></a>
+          </div>
+          <div class="card border-bottom-5 border-color-primary no-margin margin-bottom no-shadow card-outline">
+              <div class="padding">
+                  <div class="row">
+                      <div class="col-expand">
+                          <p class="no-margin fs-16 fw6 text-color-primary">3. Comparison</p>
+                          <p class="no-margin fs-13">
+                             The ID and Selfie you're provided will be verfy if matching or not. Please make sure you are providing documents is correct or else your application will be denied.
+                          </p>
+                      </div>
+                      <div class="margin-left-half col-auto">
+                          <span class="material-symbols op7 text-color-green" style="font-size: 50px;">
+                          sensor_occupied
+                          </span>
+                      </div>
+                  </div>
+              </div>
+          </div>
+         
+          <div class="mt-100"></div>
+        </div>
+    </div>
+  </div>
+</template>
+<script>
+export default (props, {$, $on, $f7, $store, $update, $f7router}) => {
+      const tag = '[HOME]'
+      const accessKey = "f5185282e65b4203";
+      const secretKey = "370d74f95ef29c82";
+      const country = "SINGAPORE";
+      const action = {
+          take_selfie : ()=>{ 
+              /**
+               *  This function will be call by id=button_selfie. Please check on above
+               * 
+               *  Documentation from https://prod-guardian-cv.oss-ap-southeast-5.aliyuncs.com/docs/liveness-detection-android/en/document-cordova.html
+               * 
+               * **/
+              console.log(tag,'Taking selfie init...');
+              
+              try {
+                    console.log(tag+'[adv][init]','Advance Initializing..');
+                    /**
+                     * 
+                     * - How can I use this cordova.plugins.LivenessDetectionPlugin.initSDK?
+                     * 
+                     * - I tried cordova.plugins.LivenessDetectionPlugin.initSDK
+                     *   but nothing happend.
+                     * 
+                     * - accessKey, secretKey, country from  https://in.advance.ai/AccountManagement 
+                     * 
+                     * - How can I use this  cordova.plugins.LivenessDetectionPlugin.initSDKByLicense? Where do I get the license to be set on 
+                     *   cordova.plugins.LivenessDetectionPlugin.setLicenseAndCheck ? 
+                     *  
+                     **/
+                    cordova.plugins.LivenessDetectionPlugin.initSDK(accessKey,secretKey,country,true);
+                    console.log(tag+'[adv][init]','Advance Initialization SDK is ENDED..');
+                  
+                   
+
+                    //This code is given from Tech Support.
+                    console.log(tag+'[adv][seq]','Sequence Initializing..');
+                    
+                    const sequence = ['MOUTH', 'POS_YAW'];
+                    cordova.plugins.LivenessDetectionPlugin.setActionSequence(true,sequence);
+
+                    console.log(tag+'[adv][seq]','Sequence ENDED..');
+
+                    console.log(tag+'[adv][liveness]','Liveness Detection Initializing..');
+                     //Is this correct and should be right here? If not what should I do.
+                    cordova.plugins.LivenessDetectionPlugin.bindUser(''); //What value should I input here?
+                    cordova.plugins.LivenessDetectionPlugin.isDetectOcclusion(true);
+                    cordova.plugins.LivenessDetectionPlugin.setResultPictureSize(720);
+                    cordova.plugins.LivenessDetectionPlugin.setLogEnable(true); //What is this for?
+                    cordova.plugins.LivenessDetectionPlugin.startLivenessDetection((res)=>{ //no reponds and no error logs shown.
+                      alert(res);
+                    });
+                    console.log(tag+'[adv][liveness]','Liveness Detection ENDED..');
+                
+
+              } catch (error) {
+                console.log(tag+'[adv][error]',error)
+              }
+              
+
+          }
+      }
+      $on('pageInit', (e, page)=>{
+          
+      });
+      $on('pageBeforeOut', (e, page)=>{
+
+      });
+      return $render;
+  };
+</script>
