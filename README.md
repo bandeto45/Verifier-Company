@@ -58,8 +58,8 @@ Please see on cordova/platform/android/app/build.gradle for correction integrati
 
 ## NPM Scripts
 
-* 🔥 `start` - run development server
-* 📱 `cordova-android` - run dev cordova Android app on android phone
+* 🔥 `npm start` - run development server
+* 📱 `npm run cordova-android` - run dev cordova Android app on android phone
 
 
 ## SOURCE CODE PROJECT
