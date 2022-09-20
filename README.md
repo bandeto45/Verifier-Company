@@ -1,6 +1,11 @@
 # Verifier Company
 
+
+
 ## Framework7 CLI Options
+
+
+
 ## Documentation Basis
 ```
 https://prod-guardian-cv.oss-ap-southeast-5.aliyuncs.com/docs/liveness-detection-android/en/document-cordova.html
