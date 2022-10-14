@@ -1,35 +1,97 @@
 
 import { createStore } from 'framework7';
+import api from './request.api';
 
 const store = createStore({
   state: {
-    products: [
+    myinfo        : localStorage.myinfo ? api.decryptdata(localStorage.myinfo)  : [],
+    liveness_res  : localStorage.liveness_res ? api.decryptdata(localStorage.liveness_res)  : [],
+    iqa           : localStorage.iqa ? api.decryptdata(localStorage.iqa)  : [],
+    iqaBlob       : false,
+    liveness_serve  : localStorage.liveness_serve ? api.decryptdata(localStorage.liveness_serve)  : [],
+    iqa_serve           : localStorage.iqa_serve ? api.decryptdata(localStorage.iqa_serve)  : [],
+
+
+    face_compare  : localStorage.face_compare ? api.decryptdata(localStorage.face_compare)  : [],
+    iqa_license   : [],
+    lvs_license   : [],
+    id_type_value : {
+      'TIN' : 'TIN',
+      'SSS' : 'SSS',
+      'ID Card' : 'ID_CARD',
+      'Drivers License' : 'DRIVING_LICENSE',
+      'Passport'        : 'PASSPORT',
+      'UMID'            : 'UMID'
+    },
+    country       : [
       {
-        id: '1',
-        title: 'Apple iPhone 8',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nisi tempora similique reiciendis, error nesciunt vero, blanditiis pariatur dolor, minima sed sapiente rerum, dolorem corrupti hic modi praesentium unde saepe perspiciatis.'
+        cn        : 'Philippines',
+        cc        : 'PH',
+        type      : [ 
+          'Drivers License', 
+          'ID Card',  
+          'Passport', 
+          'SSS', 
+          'TIN', 
+          'UMID' 
+        ]
+        
       },
       {
-        id: '2',
-        title: 'Apple iPhone 8 Plus',
-        description: 'Velit odit autem modi saepe ratione totam minus, aperiam, labore quia provident temporibus quasi est ut aliquid blanditiis beatae suscipit odio vel! Nostrum porro sunt sint eveniet maiores, dolorem itaque!'
+        cn        : 'Saudi Arabia',
+        cc        : 'SA',
+        type      : ['ID Card', 'Drivers License', 'Passport']
       },
       {
-        id: '3',
-        title: 'Apple iPhone X',
-        description: 'Expedita sequi perferendis quod illum pariatur aliquam, alias laboriosam! Vero blanditiis placeat, mollitia necessitatibus reprehenderit. Labore dolores amet quos, accusamus earum asperiores officiis assumenda optio architecto quia neque, quae eum.'
-      },
+        cn        : 'Singapore',
+        cc        : 'SG',
+        type      : ['ID Card', 'Drivers License', 'Passport']
+      }
     ]
   },
   getters: {
-    products({ state }) {
-      return state.products;
+    id_type_value({state}){
+      return state.id_type_value;
+    },
+    iqa({state}) {
+      return state.iqa
+    },
+    liveness_res({ state }) {
+      return state.liveness_res;
+    },
+    iqa_serve({state}) {
+      return state.iqa_serve
+    },
+    liveness_serve({ state }) {
+      return state.liveness_serve;
+    },
+    getdata({state}, v){
+      return state[v];
+    },
+    country({state}){
+      return state.country;
+    },
+    iqa_license({state}){
+      return state.iqa_license;
+    },
+    lvs_license({state}){
+      return state.lvs_license;
+    },
+    myinfo({state}){
+      return state.myinfo;
+    },
+    face_compare({state}){
+      return state.face_compare;
+    },
+    iqaBlob({state}){
+      return state.iqaBlob;
     }
   },
   actions: {
-    addProduct({ state }, product) {
-      state.products = [...state.products, product];
-    },
+    setdata({state}, v){
+      state[v.key] = v.value;
+      console.log("dispatch", state);
+    }
   },
 })
 export default store;

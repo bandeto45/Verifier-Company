@@ -1,0 +1,63 @@
+<template>
+  <div class="page" data-name="book">
+    <div class="navbar  navbar-style-1">
+      <div class="navbar-inner">
+            <div class="left">
+              <a href="#" class="link icon-only panel-open" data-panel="left">
+                
+                <i class="icon material-symbols ">menu</i>
+              </a>
+              <a @click="${()=>navigator.app.exitApp()}" class="link cus back" style="width: auto; min-width: auto;">
+                <span class="material-symbols">
+                arrow_back
+                </span>
+              </a>
+            </div>
+              <div class="title  ">
+                
+                
+              </div>
+              <div class="right" >
+                  
+              </div>
+          </div>
+    </div>
+    <!-- Scrollable page content-->
+    <div class="page-content pt-60">
+        <div class="card  position-fixed z-index-0 no-margin no-shadow border-bottom-style-1 bg-color-primary" style="">
+          <div class="container padding-vertical">
+              <h2 class="no-margin-bottom text-color-white">Company Profile</h2>
+              <p class="text-color-yellow no-margin">
+                  Set your campany information.
+              </p>
+              
+          </div>
+        </div>
+        <div class="container margin-top pt-30">
+          <p class=" text-color-black margin-horizontal mt-50 fs-12 text-align-center op5">Copyright © 2022 Verifier Company - All Rights Reserved</p>
+          
+          <div class="mt-100"></div>
+          
+        </div>
+    </div>
+  </div>
+</template>
+<script>
+import my_ajx from '../js/api';
+import mymedia from '../js/media';
+  export default (props, {$, $on, $f7, $store, $update, $f7router}) => {
+      let ajx = new my_ajx($f7);
+      let cam = new mymedia($f7);
+      let navigate = (path = '/home/')=>{
+          $f7router.navigate(path, { transition: 'f7-cover', clearPreviousHistory  : true })
+      }
+      const action = {
+      }
+      $on('pageInit', (e, page)=>{
+          
+      });
+      $on('pageBeforeOut', (e, page)=>{
+      });
+      return $render;
+  };
+</script>

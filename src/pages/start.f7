@@ -1,0 +1,70 @@
+<template>
+    <div class="page" data-name="book">
+        <div class="page-content bg-color-primary bg-image account-area row" >
+
+            <div class="container text-align-center align-self-center" style="max-width: 400px; width : 80%;">
+                  <div id="loader"></div>
+            </div>
+        </div>
+    </div>
+</template>
+<script>
+import api from '../js/request.api';
+import logo from '../assets/logo.json';
+import lottie from 'lottie-web';
+
+export default (props, {$, $on, $f7, $store, $update, $f7router}) => {
+    const myinfo = $store.getters.myinfo
+    let navigate = (path = '/home/')=>{
+        $f7router.navigate(path, { transition: 'f7-cover', clearPreviousHistory  : true })
+    }
+    const action = {
+        validate_code : ()=>{
+            console.log(myinfo.value.result)
+            if(myinfo.value.result){
+                api.myinfo((res)=>{
+                    let sub_nav = navigate;
+                    if(res.result){
+                        if(res.advance_ai.face_comparison_status){
+                            sub_nav('/compare/result/');
+                        }else{
+                            sub_nav();
+                        }
+                    }else{
+                        let data_dispatch_empty = ['myinfo', 'liveness_res', 'iqa', 'iqaBlob', 'liveness_serve', 'iqa_serve', 'face_compare', 'iqa_license', 'lvs_license'];
+                        data_dispatch_empty.map(el=>{
+                            api.dispatch(el, []);
+                        })
+                        // api.dispatch('myinfo', '');
+                        localStorage.clear();
+                        $update();
+                        
+                        sub_nav('/validate/');
+                    }
+                });
+                
+            }else{
+                navigate('/validate/')
+            }
+        }
+    }
+    let animation = false;
+    $on('pageInit', (e, page)=>{
+         animation = lottie.loadAnimation({
+            container: document.getElementById('loader'),
+            renderer: 'svg',
+            loop: false,
+            autoplay: true,
+            animationData : logo
+        });
+        setTimeout(() => {
+            action.validate_code();
+        }, 7000);
+            
+    });
+    $on('pageBeforeOut', (e, page)=>{
+        animation.destroy();
+    });
+    return $render;
+};
+</script>

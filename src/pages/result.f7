@@ -1,0 +1,145 @@
+<template>
+    <div class="page" data-name="book">
+        <div class="navbar  navbar-style-1">
+            <div class="navbar-inner">
+                <div class="left">
+              
+                    <a @click="${action.logout}" class="link cus" style="width: auto;">
+                      <span class="material-symbols margin-horizontal">
+                      logout
+                      </span>
+                      
+                    </a>
+                  </div>
+                  <div class="title  ">
+                  
+                  
+                  </div>
+                  <div class="right" >
+                      <a  class="link cus back" style="width: auto; min-width: auto;">
+                          <span class="material-symbols">
+                          info
+                          </span>
+                      </a>
+                  </div>
+            </div>
+        </div>
+      <!-- Scrollable page content-->
+        <div class="page-content pt-60">
+            <div class="card  position-fixed z-index-0 no-margin no-shadow border-bottom-style-1 bg-color-primary" style="">
+                <div class="container pt-50 pb-50 text-align-center">
+                    ${myinfo.value.advance_ai.face_comparison_status ? $h` 
+                        ${myinfo.value.advance_ai.face_comparison_status == 'Passed' ? $h` 
+                            <h2 class="no-margin-bottom text-color-green text-align-center margin-horizontal">CONGRATULATIONS!</h2>
+                            <img src="${passed}" alt="" srcset="" class="width-fill text-align-center mt-70 mb-30" />
+                            <p class="text-color-white op6 pt-30 no-margin text-align-center margin-horizontal">
+                                You <strong class=" text-color-green">passed</strong> the verification. You can now proceed and go back to  ${myinfo.value.company_info.name} app.
+                                
+                            </p>
+                        
+                        ` : $h` 
+                            ${myinfo.value.advance_ai.face_comparison_status == 'Manual Check' ? $h` 
+                                <h2 class="no-margin-bottom text-color-green text-align-center margin-horizontal">PROCESSING. . .</h2>
+                                <img src="${manual}" alt="" srcset="" class="width-fill  mt-70 mb-30" />
+                                <p class="text-color-white op6 pt-30 no-margin text-align-center margin-horizontal">
+                                    It would take 24 to 48 hrs. to verify your submission. For the meantime, you can go back to ${myinfo.value.company_info.name} App and will notify you soon for the results.
+                                </p>
+                            ` : $h` 
+                            <h2 class="no-margin-bottom text-color-green text-align-center margin-horizontal">SORRY!</h2>
+                            <img src="${denied}" alt="" srcset="" class="width-fill  mt-70 mb-30" />
+
+                            <p class="text-color-white op6 pt-30 no-margin  margin-horizontal">
+                                You did not pass the verification process. Make sure to submit a valid ID and try again.
+                            </p>
+
+                                
+
+                            <!-- <a @click="${()=>navigate('/home/', true)}" class="button button-fill color-orange mt-30 button-large">Retake Verification</a>  -->
+                            `}
+                        `}
+                        
+                    ` : $h` 
+                        <h2 class="no-margin-bottom text-color-green text-align-center margin-horizontal">VERIFYING</h2>
+                        <div id="loader"></div>
+
+                        <p class="text-color-white op6 pt-30 no-margin  margin-horizontal">
+                            The ID and Liveness you're provided will be verfy if matching or not. Please make sure you are providing documents is correct or else your application will be denied.
+                        </p>
+                    `}
+                    
+                    
+                </div>
+            </div>
+            
+            <div class="container mt-50">
+                <p class=" text-color-black margin-horizontal mt-50 fs-12 text-align-center op5">Copyright © 2022 Verifier Company - All Rights Reserved</p>
+            </div>
+        <!-- <a  class="button button-fill button-large">Lets Start</a>   -->
+            <div class="mt-100"></div>
+        </div>
+    </div>
+  </template>
+  <script>
+    import api from '../js/request.api';
+    import lottie from 'lottie-web';
+    import pairing from '../assets/pairing.json';
+    import manual from '../assets/Manual.png';
+    import denied from '../assets/Denied.png';
+    import passed from '../assets/Passed.png';
+    import copyright from '../pages/copyright.f7';
+
+    export default (props, {$, $on, $f7, $store, $update, $f7router}) => {
+        const myinfo = $store.getters.myinfo;
+        let iqa = $store.getters.iqa;
+        let animation = false;
+
+        let navigate = (path = '/home/')=>{
+            $f7router.navigate(path, { transition: 'f7-cover', clearPreviousHistory  : true })
+        }
+        const tag = '[STEP3]'
+        
+        const action = {
+            logout      : ()=>{
+                
+                console.log(localStorage);
+                let data_dispatch_empty = ['myinfo', 'liveness_res', 'iqa', 'iqaBlob', 'liveness_serve', 'iqa_serve', 'face_compare', 'iqa_license', 'lvs_license'];
+                data_dispatch_empty.map(el=>{
+                    api.dispatch(el, []);
+                })
+                $update();
+                console.log(myinfo)
+                setTimeout(()=>{
+                    localStorage.clear();
+                    navigate('/');
+                }, 800)
+                
+            },
+        }
+        $on('pageInit', (e, page)=>{
+            console.log(copyright.framework7Component)
+            if(!myinfo.value.advance_ai.face_comparison_status){
+                animation = lottie.loadAnimation({
+                    container: document.getElementById('loader'),
+                    renderer: 'svg',
+                    loop: false,
+                    autoplay: true,
+                    animationData : pairing
+                });
+            }
+
+            if(myinfo.value.advance_ai.face_comparison_status == 'Manual Check'){
+                let check_manual =  setInterval(()=>{
+                    api.myinfo((res)=>{
+                        clearInterval(check_manual);
+                        $update();
+                    });
+                }, 5000)
+            }
+            
+        });
+        $on('pageBeforeOut', (e, page)=>{
+            if(animation) animation.destroy();
+        });
+        return $render;
+    };
+  </script>

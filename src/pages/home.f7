@@ -4,32 +4,33 @@
       <div class="navbar-inner">
             <div class="left">
               
-              <a  class="link cus back" style="width: auto; min-width: auto;">
-                <span class="material-symbols">
-                arrow_back
+              <a @click="${action.logout}" class="link cus" style="width: auto;">
+                <span class="material-symbols margin-horizontal">
+                logout
                 </span>
+                
               </a>
             </div>
-              <div class="title  ">
-                
-                
-              </div>
-              <div class="right" >
-                  <a @click="${()=>navigator.app.exitApp()}" class="link cus back" style="width: auto; min-width: auto;">
-                      <span class="material-symbols">
-                      info
-                      </span>
-                    </a>
-              </div>
+            <div class="title  ">
+            
+            
+            </div>
+            <div class="right" >
+                <a  class="link cus back" style="width: auto; min-width: auto;">
+                    <span class="material-symbols">
+                    info
+                    </span>
+                </a>
+            </div>
           </div>
     </div>
     <!-- Scrollable page content-->
     <div class="page-content pt-60">
         <div class="card  position-fixed z-index-0 no-margin no-shadow border-bottom-style-1 bg-color-primary" style="">
           <div class="container pt-50 pb-50">
-              <h2 class="no-margin-bottom text-color-white">ID Verification</h2>
+              <h2 class="no-margin-bottom text-color-green">eKYC Verification </h2>
               <p class="text-color-white op6 pt-30 no-margin">
-                  In order to check if is you, we need to verify your ID and matches into your selfie. As a part of KYC requirement of the client.
+                In order to verify if it's you, just follow some few simple steps below.
               </p>
               <p class="text-color-white op6 pt-30 no-margin">
                   You just need to do some steps which will help us to make secure verification.
@@ -37,13 +38,14 @@
           </div>
         </div>
         <div class="container margin-top pt-30">
-          <div class="card border-bottom-5 border-color-primary no-margin margin-bottom no-shadow card-outline">
+          <p class="margin-horizontal  no-margin-bottom fs-18 fw6">STEP 1</p>
+          <div class="card  no-margin margin-bottom">
               <div class="padding">
                   <div class="row">
                       <div class="col-expand">
-                          <p class="no-margin fs-16 fw6 text-color-primary">1. Scan Your ID</p>
+                          <p class="no-margin fs-16 fw6">Scan your valid ID </p>
                           <p class="no-margin fs-13">
-                              Please make sure your uploading document is readable and fit all information on captured photo.
+                            You need to select and scan a valid ID. Make sure that all informations are readable and matches your registration record with <strong class="text-color-primary">${myinfo.value.company_info.name}</strong>.
                           </p>
                       </div>
                       <div class="margin-left-half col-auto">
@@ -52,16 +54,17 @@
                           </span>
                       </div>
                   </div>
-                 
               </div>
           </div>
-          <div class="card border-bottom-5 border-color-primary no-margin margin-bottom no-shadow card-outline">
+          <p class="margin-horizontal no-margin-bottom fs-18 fw6">STEP 2</p>
+
+          <div class="card  no-margin margin-bottom">
               <div class="padding">
                   <div class="row">
                       <div class="col-expand">
-                          <p class="no-margin fs-16 fw6 text-color-primary">2. Take a Selfie</p>
+                          <p class="no-margin fs-16 fw6">Liveness Selfie </p>
                           <p class="no-margin fs-13">
-                             To provide some good quality please use plain wall as background.
+                            Just follow some simple required gestures. For good and accurate result, use a plain wall as a background.
                           </p>
                       </div>
                       <div class="margin-left-half col-auto">
@@ -71,15 +74,17 @@
                       </div>
                   </div>
               </div>
-              <a @click="${action.take_selfie}" id='button-selfie' class="card-link link"></a>
           </div>
-          <div class="card border-bottom-5 border-color-primary no-margin margin-bottom no-shadow card-outline">
+
+          <p class="margin-horizontal  no-margin-bottom fs-18 fw6">STEP 3</p>
+
+          <div class="card  no-margin margin-bottom">
               <div class="padding">
                   <div class="row">
                       <div class="col-expand">
-                          <p class="no-margin fs-16 fw6 text-color-primary">3. Comparison</p>
+                          <p class="no-margin fs-16 fw6 ">Face Comparison </p>
                           <p class="no-margin fs-13">
-                             The ID and Selfie you're provided will be verfy if matching or not. Please make sure you are providing documents is correct or else your application will be denied.
+                            The ID and Liveness Selfie from the previous steps will be matched and compared for percentage accuracy. You will be notified for the results in <strong class="text-color-primary">${myinfo.value.company_info.name}</strong> Application.
                           </p>
                       </div>
                       <div class="margin-left-half col-auto">
@@ -90,77 +95,78 @@
                   </div>
               </div>
           </div>
-         
+          ${myinfo.value.advance_ai.front_id || iqa.value.image || liveness_res.value.livenessId && iqa.value.IDVID || myinfo.value.advance_ai.id_status ? $h` 
+                ${myinfo.value.advance_ai.liveness_photo  || liveness_res.value.image ? $h`
+                    ${!myinfo.value.advance_ai.face_comparison_status ? $h` 
+                        <a @click="${()=>navigate('/compare/', false)}" class="button button-fill  mt-30 button-large">Get Result</a> 
+                    ` : $h` 
+                        
+
+                        <a @click="${()=>navigate('/compare/result/', false)}" class="button button-fill  mt-30 button-large">GET RESULT</a> 
+                    `}
+                     
+                ` : $h` 
+                    ${myinfo.value.advance_ai.id_status=='Passed' ? $h` 
+                        <a @click="${()=>navigate('/liveness/', false)}" class="button button-fill  mt-30 button-large">Start Liveness</a>  
+                    ` : $h` 
+                        <a @click="${()=>navigate('/iqa/', false)}" class="button button-fill  mt-30 button-large">Scan valid ID</a> 
+                    `}
+                    
+                `}
+          ` : $h` 
+          <a @click="${()=>navigate('/iqa/', false)}" class="button button-fill  mt-30 button-large">Let's Start</a>  
+          `}
+           
+          <p class=" text-color-black margin-horizontal mt-50 fs-12 text-align-center op5">Copyright © 2022 Verifier Company - All Rights Reserved</p>
           <div class="mt-100"></div>
         </div>
     </div>
   </div>
 </template>
-<script>
+<script> 
+import api from '../js/request.api.js';
 export default (props, {$, $on, $f7, $store, $update, $f7router}) => {
-      const tag = '[HOME]'
-      const accessKey = "f5185282e65b4203";
-      const secretKey = "370d74f95ef29c82";
-      const country = "SINGAPORE";
-      const action = {
-          take_selfie : ()=>{ 
-              /**
-               *  This function will be call by id=button_selfie. Please check on above
-               * 
-               *  Documentation from https://prod-guardian-cv.oss-ap-southeast-5.aliyuncs.com/docs/liveness-detection-android/en/document-cordova.html
-               * 
-               * **/
-              console.log(tag,'Taking selfie init...');
-              
-              try {
-                    console.log(tag+'[adv][init]','Advance Initializing..');
-                    /**
-                     * 
-                     * - How can I use this cordova.plugins.LivenessDetectionPlugin.initSDK?
-                     * 
-                     * - I tried cordova.plugins.LivenessDetectionPlugin.initSDK
-                     *   but nothing happend.
-                     * 
-                     * - accessKey, secretKey, country from  https://in.advance.ai/AccountManagement 
-                     * 
-                     * - How can I use this  cordova.plugins.LivenessDetectionPlugin.initSDKByLicense? Where do I get the license to be set on 
-                     *   cordova.plugins.LivenessDetectionPlugin.setLicenseAndCheck ? 
-                     *  
-                     **/
-                    cordova.plugins.LivenessDetectionPlugin.initSDK(accessKey,secretKey,country,true);
-                    console.log(tag+'[adv][init]','Advance Initialization SDK is ENDED..');
-                  
-                   
-
-                    //This code is given from Tech Support.
-                    console.log(tag+'[adv][seq]','Sequence Initializing..');
-                    
-                    const sequence = ['MOUTH', 'POS_YAW'];
-                    cordova.plugins.LivenessDetectionPlugin.setActionSequence(true,sequence);
-
-                    console.log(tag+'[adv][seq]','Sequence ENDED..');
-
-                    console.log(tag+'[adv][liveness]','Liveness Detection Initializing..');
-                     //Is this correct and should be right here? If not what should I do.
-                    cordova.plugins.LivenessDetectionPlugin.bindUser(''); //What value should I input here?
-                    cordova.plugins.LivenessDetectionPlugin.isDetectOcclusion(true);
-                    cordova.plugins.LivenessDetectionPlugin.setResultPictureSize(720);
-                    cordova.plugins.LivenessDetectionPlugin.setLogEnable(true); //What is this for?
-                    cordova.plugins.LivenessDetectionPlugin.startLivenessDetection((res)=>{ //no reponds and no error logs shown.
-                      alert(res);
-                    });
-                    console.log(tag+'[adv][liveness]','Liveness Detection ENDED..');
+    const tag = '[HOME]'
+    const myinfo = $store.getters.myinfo;
+    let iqa = $store.getters.iqa;
+    let liveness_res = $store.getters.liveness_res;
+    let face_compare = $store.getters.face_compare;
+        let navigate = (path = '/home/', clr= true)=>{
+            $f7router.navigate(path, { transition: 'f7-cover', clearPreviousHistory  : clr })
+        }
+        const action = {
+            logout      : ()=>{
                 
-
-              } catch (error) {
-                console.log(tag+'[adv][error]',error)
-              }
-              
-
-          }
-      }
+                console.log(localStorage);
+                let data_dispatch_empty = ['myinfo', 'liveness_res', 'iqa', 'iqaBlob', 'liveness_serve', 'iqa_serve', 'face_compare', 'iqa_license', 'lvs_license'];
+                data_dispatch_empty.map(el=>{
+                    api.dispatch(el, []);
+                })
+                // api.dispatch('myinfo', '');
+                $update();
+                console.log(myinfo)
+                setTimeout(()=>{
+                    localStorage.clear();
+                    navigate('/');
+                }, 800)
+                
+            },
+        }
       $on('pageInit', (e, page)=>{
-          
+        var permissions = cordova.plugins.permissions;
+            let permissions_list = [
+                permissions.MANAGE_MEDIA
+            ];
+            permissions.requestPermission(permissions.MANAGE_EXTERNAL_STORAGE, success, error);
+            function error(e) {
+                console.warn(e);
+            }
+
+            function success( status ) {
+                if( !status.hasPermission ) error();
+                else console.log(status)
+            }
+            
       });
       $on('pageBeforeOut', (e, page)=>{
 

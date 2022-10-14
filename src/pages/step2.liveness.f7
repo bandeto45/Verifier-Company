@@ -1,0 +1,156 @@
+<template>
+    <div class="page" data-name="book">
+        <div class="navbar  navbar-style-1">
+            <div class="navbar-inner">
+                <div class="left">
+                    
+                    <!-- <a  class="link cus back" style="width: auto; min-width: auto;">
+                    <span class="material-symbols">
+                    arrow_back
+                    </span>
+                    </a> -->
+                </div>
+                <div class="title  ">
+                  
+                  
+                </div>
+                <div class="right" >
+                    
+                </div>
+            </div>
+        </div>
+      <!-- Scrollable page content-->
+        <div class="page-content pt-60">
+            <div class="card  position-fixed z-index-0 no-margin no-shadow border-bottom-style-1 bg-color-primary" style="">
+                <div class="container pt-10 pb-50">
+                    
+                    <h2 class="no-margin-bottom text-color-green margin-horizontal">Liveness Selfie</h2>
+                    <p class="text-color-white op6 pt-30 no-margin  margin-horizontal">
+                        Just follow some simple required gestures. For good and accurate result, use a plain wall as a background.
+                    </p>
+                   
+                </div>
+            </div>
+            <div class="container mt-50">
+                ${liveness_res.value.image ? $h` 
+                    <div class="card no-margin margin-bottom  image">
+                        <img src="data:image/jpeg;base64, ${liveness_res.value.image}" width="100%"  />
+                        <a @click="${action.take_selfie}" id='button-selfie' class="card-link link"></a>
+                    </div>
+                    
+                ` : $h` 
+                    <div class="card no-margin margin-bottom ">
+                        <div class="text-align-center pa-50">
+                            <span class="material-symbols text-align-center op7  text-color-orange" style="font-size: 100px;">
+                            camera_front
+                            </span>
+                            <p class="text-align-center">Start Liveness Selfie.</p>
+                        </div>
+                        <a @click="${action.take_selfie}" id='button-selfie' class="card-link link"></a>
+                    </div>
+                `}
+                ${liveness_res.value.image ? $h` 
+                    <a @click="${()=>navigate('/compare/')}"  class="button button-fill mt-30 button-large margin-bottom">Next</a>  
+                    <a @click="${action.take_selfie}" class="button button-gray button-fill button-large">Retake Selfie</a>  
+                ` : $h` 
+                    <a @click="${action.take_selfie}" class="button button-fill  mt-30 button-large">Let's Start</a>  
+                `}
+                
+                
+                
+                
+                
+
+
+            </div>
+        <!-- <a  class="button button-fill button-large">Lets Start</a>   -->
+            <p class=" text-color-black margin-horizontal mt-50 fs-12 text-align-center op5">Copyright © 2022 Verifier Company - All Rights Reserved</p>
+            <div class="mt-100"></div>
+        </div>
+    </div>
+  </template>
+  <script>
+    import api from '../js/request.api';
+
+    export default (props, {$, $on, $f7, $store, $update, $f7router}) => {
+        let liveness_res = $store.getters.liveness_res;
+        let lvs_license = $store.getters.lvs_license;
+        const myinfo = $store.getters.myinfo
+        
+        let navigate = (path = '/home/')=>{
+            $f7router.navigate(path, { transition: 'f7-cover', clearPreviousHistory  : true })
+        }
+        const tag = '[STEP2]'
+        // const accessKey = "52393b7c6fadbac8";
+        // const secretKey = "4a2ac33eef9e1820";
+        const country = "Singapore";
+        const action = {
+            initLiveness : ()=>{
+                let success_lvs = (res)=>{
+                    console.log(tag+"[license]", res)
+                    
+                    console.log(tag+'[adv][seq]','Sequence Initializing..');
+                    const sequence = ['MOUTH', 'BLINK', 'POS_YAW'];
+                    cordova.plugins.LivenessDetectionPlugin.setActionSequence(true,sequence);
+                    console.log(tag+'[adv][seq]','Sequence ENDED..');
+
+                    console.log(tag+'[adv][liveness]','Liveness Detection Initializing..');
+                    cordova.plugins.LivenessDetectionPlugin.bindUser(myinfo.value.code);
+                    cordova.plugins.LivenessDetectionPlugin.isDetectOcclusion(true);
+                    cordova.plugins.LivenessDetectionPlugin.setResultPictureSize(720);
+                    cordova.plugins.LivenessDetectionPlugin.setLogEnable(true);
+                    cordova.plugins.LivenessDetectionPlugin.startLivenessDetection((res)=>{ 
+                        api.dispatch('liveness_res', JSON.parse(res));
+                        api.setLocal('liveness_res', JSON.parse(res));
+                        $update();
+                        setTimeout(()=>{
+                            console.table(liveness_res.value);
+                        },500)
+                    });
+                    console.log(tag+'[adv][liveness]','Liveness Detection ENDED..');
+                }
+                let error_lvs   = (res)=>{
+                    console.log(tag+"[license][error]", res)
+                    api.notif('ERROR :' + res);
+                }
+                cordova.plugins.LivenessDetectionPlugin.initSDKByLicense(country,false);
+                cordova.plugins.LivenessDetectionPlugin.setLicenseAndCheck(lvs_license.value.data.data.license, success_lvs, error_lvs) 
+                
+            },
+            take_selfie : ()=>{ 
+              $f7.dialog.confirm("You're using Liveness Selfie, want to continue?", "Warning!", ()=>{
+                    console.log(tag,'Taking selfie init...');
+                    try {
+                        const params = {
+                            json : 1,
+                            dataset     : {
+                                
+                                code : myinfo.value.code,
+                                authenticate_adv    : 1,
+                                type    :   "liveness",
+                                applicationId   :  "id.verifier.app",
+                                licenseEffectiveSeconds    : 10000,
+                            },
+                            exec        : (res)=>{
+                                console.log(res);
+                                $update();
+                                action.initLiveness();
+                            },
+                            store       : 'lvs_license',
+                        }
+                        api.request(params)  
+                    } catch (error) {
+                        console.log(tag+'[adv][error]',error)
+                    }
+              })
+            }
+      
+        }
+        $on('pageInit', (e, page)=>{
+            
+        });
+        $on('pageBeforeOut', (e, page)=>{
+        });
+        return $render;
+    };
+  </script>

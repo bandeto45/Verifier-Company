@@ -14,20 +14,30 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "cordova-android": "^10.1.2",
+    "cordova-browser": "^6.0.0",
+    "cordova-plugin-android-permissions": "^1.1.4",
     "cordova-plugin-file": "^7.0.0",
+    "cordova-plugin-file-transfer": "github:Priyansu431/cordova-plugin-file-transfer",
     "cordova-plugin-keyboard": "^1.2.0",
+    "cordova-plugin-network-information": "^3.0.0",
     "cordova-plugin-statusbar": "^3.0.0",
-    "livenessdetectionplugin": "file:ai.advance.liveness"
+    "GlobalIQAPlugin": "file:GlobalIQAPlugin",
+    "livenessdetectionplugin": "file:LivenessDetectionPlugin"
   },
   "cordova": {
     "plugins": {
       "cordova-plugin-statusbar": {},
       "cordova-plugin-keyboard": {},
       "cordova-plugin-file": {},
-      "ai.advance.liveness": {}
+      "ai.advance.globalIQA": {},
+      "ai.advance.liveness": {},
+      "cordova-plugin-network-information": {},
+      "cordova-plugin-file-transfer": {},
+      "cordova-plugin-android-permissions": {}
     },
     "platforms": [
-      "android"
+      "android",
+      "browser"
     ]
   }
 }

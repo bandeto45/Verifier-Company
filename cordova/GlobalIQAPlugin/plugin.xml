@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin xmlns:android="http://schemas.android.com/apk/res/android" id="ai.advance.globalIQA"
+    version="1.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0">
+    <js-module name="GlobalIQAPlugin" src="www/GlobalIQAPlugin.js">
+        <clobbers target="cordova.plugins.GlobalIQAPlugin" />
+    </js-module>
+    <name>GlobalIQAPlugin</name>
+    <platform name="android">
+        <config-file parent="/*" target="res/xml/config.xml">
+            <feature name="GlobalIQAPlugin">
+                <param name="android-package" value="ai.advance.global.iqa.GlobalIQAPlugin" />
+            </feature>
+        </config-file>
+        <config-file parent="/*" target="AndroidManifest.xml" />
+        <source-file
+            src="src/android/GlobalIQAPlugin.java"
+            target-dir="src/ai/advance/global/iqa" />
+    </platform>
+</plugin>

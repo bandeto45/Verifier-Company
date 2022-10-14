@@ -1,0 +1,32 @@
+{
+    "android": {
+      "release": {
+        "keystore": "dssi.jks",
+        "storePassword": "d88I@2o22",
+        "alias": "dssi",
+        "password": "d88I@2o22",
+        "keystoreType": "",
+        "packageType" : "apk"
+      },
+      "debug": {
+        "keystore": "dssi.jks",
+        "storePassword": "d88I@2o22",
+        "alias": "dssi",
+        "password": "d88I@2o22",
+        "keystoreType": "",
+        "packageType" : "apk"
+      }
+    },
+    "ios": {
+      "debug": {
+        "developmentTeam": "QY84E76G5F"
+      },
+      "release": {
+        "developmentTeam": "QY84E76G5F",
+        "codeSignIdentity": "iPhone Developer",
+        "packageType": "ad-hoc"
+      }
+    }
+  }
+  
+   

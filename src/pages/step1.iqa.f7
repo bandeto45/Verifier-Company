@@ -1,0 +1,343 @@
+<template>
+    <div class="page" data-name="book">
+        <div class="navbar  navbar-style-1">
+            <div class="navbar-inner">
+                <div class="left">
+                    
+                    <a  class="link cus back" style="width: auto; min-width: auto;">
+                    <span class="material-symbols">
+                    arrow_back
+                    </span>
+                    </a>
+                </div>
+                <div class="title  ">
+                  
+                  
+                </div>
+                <div class="right" >
+                    
+                </div>
+            </div>
+        </div>
+      <!-- Scrollable page content-->
+        <div class="page-content pt-60">
+            <div class="card  position-fixed z-index-0 no-margin no-shadow border-bottom-style-1 bg-color-primary" style="">
+                <div class="container pt-10 pb-50">
+                    
+                    <h2 class="no-margin-bottom text-color-green margin-horizontal">Scan your valid ID </h2>
+                    <p class="text-color-white op6 pt-30 no-margin  margin-horizontal">
+                        You need to select and scan a valid ID. Make sure that all informations are readable and matches your registration record with <strong class="text-color-primary">${myinfo.value.company_info.name}</strong>.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="container mt-50">
+                <div class="form-elements mb-30">
+                    <div class="list">
+                        <ul class="row">
+                            <li class="item-content item-input col-100">
+                                <div class="item-media">
+                                    <span class="material-symbols">
+                                        public
+                                    </span>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-input-wrap">
+                                        <input type="text" name="country" @input="${action.region}" value="${localStorage.region}"  placeholder="Country" class="form-control"/>
+                                    </div>
+                                </div>
+                            </li>
+                            
+                            <li class="item-content item-input col-100">
+                                <div class="item-media">
+                                    <span class="material-symbols">
+                                        document_scanner
+                                    </span>
+                                </div>
+                                <div class="item-inner">
+                                    <div class="item-input-wrap">
+                                        <input type="text" name="id" @input="${action.id_type}" value="${localStorage.id_type}"  placeholder="Select Card Type" class="form-control"/>
+                                    </div>
+                                </div>
+                            </li>
+                            
+                                        
+                        </ul>
+                    </div>
+                </div>
+                ${id_type != "" ? $h` 
+                    ${iqa.value.success ? $h` 
+                        <div class="card no-margin margin-bottom  image">
+                            <img src="data:image/jpeg;base64, ${iqa.value.image}" width="100%"  />
+                            <a @click="${action.take_selfie}" id='button-selfie' class="card-link link"></a>
+                        </div>
+                        
+                    ` : $h` 
+                        <div class="card no-margin margin-bottom ">
+                            <div class="text-align-center pa-50">
+                                <span class="material-symbols text-align-center op7  text-color-orange" style="font-size: 100px;">
+                                    document_scanner
+                                </span>
+                                <p class="text-align-center">Scan your valid ID.</p>
+                            </div>
+                            <!-- <a @click="${action.take_selfie}" id='button-selfie' class="card-link link"></a> -->
+                        </div>
+                    `}
+                    ${iqa.value.success ? $h` 
+                        ${validated_id ? $h`
+                            <a @click="${()=>navigate('/liveness/')}" class="button button-fill mt-30 button-large margin-bottom">Next</a>  
+                        ` : $h` 
+                            ${validating_id ? $h` 
+                                <p class="text-align-center mt-30">Validating your submitted valid ID...</p>
+                            ` : $h` 
+                            <a @click="${action.take_selfie}" class="button button-gray button-fill button-large">Retake</a>
+                            `}
+                            
+                        `}
+                          
+                    ` : $h` 
+                        <a @click="${action.take_selfie}" class="button button-fill  mt-30 button-large">Let's Start</a>  
+                    `}
+                ` : $h` 
+                    <div class="mt-100" style="height: 240px;"></div>
+                        
+                `}
+                
+                
+                
+                
+                
+                
+
+
+            </div>
+            <p class=" text-color-black margin-horizontal mt-50 fs-12 text-align-center op5">Copyright © 2022 Verifier Company - All Rights Reserved</p>
+            <div class="mt-100"></div>
+        </div>
+    </div>
+  </template>
+  <script>
+    import api from '../js/request.api';
+    export default (props, {$, $on, $f7, $store, $update, $f7router}) => {
+        let iqa = $store.getters.iqa;
+        const myinfo = $store.getters.myinfo
+        let iqaBlob_store = $store.getters.iqaBlob;
+        let country = $store.getters.country;
+        let iqa_license = $store.getters.iqa_license;
+        let id_type_value = $store.getters.id_type_value;
+
+
+        let get_type = [];
+        let cc = "";
+        let id_type  = localStorage.id_type;
+        let validating_id = true, validated_id = false;
+        let navigate = (path = '/home/', clearPreviousHistory=true)=>{
+            $f7router.navigate(path, { transition: 'f7-cover', clearPreviousHistory  : clearPreviousHistory })
+        }
+        const tag = '[STEP1]'
+        const action = {
+
+            getBlob : (front_id)=>{
+                
+                $update();
+                console.log(tag+'[compare][1st]',front_id)
+                action.getImgURL(front_id+'?'+Date.now(), (iqaBlob)=>{
+                    // const front_id_myFile = new File([iqaBlob], fileName_front_id,{type:"image/jpeg" });
+                    // const iqa_dataTransfer = new DataTransfer();
+                    
+                    console.log(tag+'[front_id][iqaBlob]', iqaBlob );
+                    // console.log(tag+'[front_id][blob]',; front_id_myFile );
+                    action.check_id(iqaBlob);
+                });
+                
+                
+            },
+            check_id : (iqaBlob)=>{
+                api.dispatch('iqaBlob', iqaBlob); $update();
+                var formData = new FormData();
+                    formData.append("cardType", id_type_value.value[id_type] );
+                    formData.append("frontFile", iqaBlob );
+                    formData.append("unified_id_card_ocr", true);
+                    formData.append("idvid", iqa.value.IDVID);
+
+                    formData.append("code", myinfo.value.code);
+                    console.log(tag+'[unified_id_card_ocr][dataset][formdata]',formData);
+                    // setTimeout(()=>{
+                    //     console.log(iqaBlob_store.value);
+                    // }, 600)
+                    $f7.request.post(api.uri(), formData, function (data) {
+                        console.log('unified_id_card_ocr result : ', data);
+                        let dataJSON = JSON.parse(data);
+                        if(dataJSON.result){
+                            validated_id = true
+                        }else{
+                            validating_id = false
+                            api.notif(dataJSON.message, dataJSON.msg_title);
+                        }
+                        $update();
+                       
+                    });
+            },
+            getImgURL      : (url, callback)=>{
+                    var xhr = new XMLHttpRequest();
+                    xhr.onload = function() {
+                        callback(xhr.response);
+                    };
+                    console.log(url);
+                    console.log(xhr.open('GET', url));
+                    xhr.responseType = 'blob';
+                    xhr.send();
+            },
+            id_type     : (e)=>{
+                //id_type
+                id_type = e.target.value;
+                
+                console.log(id_type)
+                localStorage.setItem('id_type', id_type);
+                $update();
+            },
+            region     : (e)=>{
+                //id_type
+                localStorage.setItem('region', e.target.value);
+                $update();
+            },
+            initIQA : ()=>{
+                let success_iqa = (res)=>{
+                    console.log(tag+"[license]", res)
+                    // api.notif('Ok')
+                    cordova.plugins.GlobalIQAPlugin.setLogEnable(true)
+                    cordova.plugins.GlobalIQAPlugin.bindUser(myinfo.value.code)
+                    const extras = { 
+                        region: cc, 
+                        cardType: id_type_value.value[id_type],
+                        cardSide:"FRONT",
+                        flipCameraBtnVisible: false,
+                        scanLimitSeconds : 60,
+                        screenOrientation:"PORTRAIT"
+                    }
+                    console.log(extras)
+                    cordova.plugins.GlobalIQAPlugin.startGlobalIQADetection(
+                        extras,
+                        result=>{
+                            api.dispatch('iqa', JSON.parse(result));
+                            api.setLocal('iqa', JSON.parse(result));
+                            //validating_id
+                            validating_id = true; $update();
+                            const params = {
+                                json : 1,
+                                dataset     : {
+                                    
+                                    code : myinfo.value.code,
+                                    validate_advance    : 1,
+                                    type    :   "IQA",
+                                    idvid_front_id   :  iqa.value.IDVID,
+                                    
+                                },
+                                exec        : (res)=>{
+                                    console.log(res);
+                                    $update();
+                                    action.getBlob(res.front_id.url_image_encode);
+
+                                },
+                                store       : 'iqa_serve',
+                                local       : 'iqa_serve',
+                            }
+                            api.request(params)
+                        }
+                    );
+                }
+                let error_iqa   = (res)=>{
+                    console.log(tag+"[license][error]", res)
+                    //api.notif('ERROR')
+                }
+                console.log('GET LICENSE,', iqa_license.value)
+                cordova.plugins.GlobalIQAPlugin.initSDK();
+                cordova.plugins.GlobalIQAPlugin.setLicenseAndCheck(iqa_license.value.data.data.license, success_iqa, error_iqa) 
+                
+            },
+            take_selfie : ()=>{ 
+              $f7.dialog.confirm("You're trying to take a photo, want to continue?", "Warning!", ()=>{
+                    try {
+                        const params = {
+                            json : 1,
+                            dataset     : {
+                                
+                                code : myinfo.value.code,
+                                authenticate_adv    : 1,
+                                type    :   "IQA",
+                                applicationId   :  "id.verifier.app",
+                                licenseEffectiveSeconds    : 5000,
+                            },
+                            exec        : (res)=>{
+                                console.log(res);
+                                $update();
+                                action.initIQA();
+                            },
+                            store       : 'iqa_license',
+                        }
+                        api.request(params)
+                    } catch (error) {
+                        console.log(tag+'[adv][error]',error)
+                    }
+              })
+            }
+      
+        }
+        $on('pageInit', (e, page)=>{
+            console.log(iqa.value);
+            api.check_network();
+            let autocompleteType = $f7.autocomplete.create({
+                inputEl: 'input[name=id]',
+                openIn: 'dropdown',
+                source : (query, render)=>{
+                    var results = [];
+                    // Find matched items
+                    let get_types = [];
+                    country.value.map(el=>{
+                        if( el.cn == $('input[name=country]').value()){
+                        get_types = el.type;
+                        cc        = el.cc;
+                        }
+                    })
+                    $update();
+                    console.log(get_types)
+
+                    for (var i = 0; i < get_types.length; i++) {
+                        if (get_types[i].toString().toLowerCase().indexOf(query.toString().toLowerCase()) >= 0) results.push(get_types[i]);
+                    }
+                    // Render items by passing array with result items
+                    console.log(results)
+
+                    render(results);
+                }
+            });
+            let autocomplete_Country = $f7.autocomplete.create({
+                inputEl: 'input[name=country]',
+                openIn: 'dropdown',
+                source: function (query, render) {
+                    var results = [];
+                    // Find matched items
+                    let get_countries = [];
+                    country.value.map(el=>{
+                        get_countries.push(el.cn);
+                    })
+                    for (var i = 0; i < get_countries.length; i++) {
+                        if (get_countries[i].toString().toLowerCase().indexOf(query.toString().toLowerCase()) >= 0) results.push(get_countries[i]);
+                    }
+                    // Render items by passing array with result items
+                    console.log(results)
+
+                    render(results);
+                },
+                on : {
+                    change : (value)=>{
+                        
+                    }
+                }
+            });
+        });
+        $on('pageBeforeOut', (e, page)=>{
+        });
+        return $render;
+    };
+  </script>

@@ -1,0 +1,109 @@
+<template>
+    <div class="page" data-name="login">
+        <div class="page-content bg-image account-area">
+			<div class="container">
+				<div class="view-logo text-center">
+					<div class="logo-icon ">
+						<img src="${logo}"  alt="verifier" srcset="" class="mylogo"/>
+
+					</div>
+
+				</div>
+				<div class="tabs">
+					<div class="tab tab-active form-elements tabs">
+						<form class="tab tab-active" id="code-form">
+							<div class="title-head text-align-center">
+								<p class=" text-color-black op5">Get verify your account!</p>
+							</div>
+							<div class="list">
+								<ul class="row">
+									<li class="item-content item-input col-100">
+										<div class="item-media">
+											<span class="material-symbols">
+                                            data_array
+                                            </span>
+										</div>
+										<div class="item-inner">
+											<div class="item-input-wrap">
+												<input type="text" name="code" placeholder="Enter your code..." class="form-control"/>
+											</div>
+										</div>
+									</li>
+								</ul>
+								<p class=" text-color-black margin-horizontal fs-12 op5">By procceeding means you accept the terms and condition of verifier company</p>
+
+							</div>
+							<div class="clearfix">
+								<a @click=${action.validate} class="button-large button button-with-loader margin-bottom btn-signin button-fill">PROCEED</a>							
+								<a  class="button-large button button-with-loader btn-close button-fill button-gray">CLOSE</a>		
+								<p class=" text-color-black margin-horizontal mt-50 fs-12 text-align-center op5">Copyright © 2022 Verifier Company - All Rights Reserved</p>
+
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+    </div>    
+</template>
+  <script>
+  import logo from '../assets/logo.png'; 
+  import api from '../js/request.api';
+
+    export default (props, {$, $on, $f7, $store, $update, $f7router}) => {
+        let navigate = (path = '/home/')=>{
+            $f7router.navigate(path, { transition: 'f7-cover', clearPreviousHistory  : true })
+        }
+		const myinfo = $store.getters.myinfo
+        const action = {
+            validate : ()=>{
+				let getform = api.get_form('#code-form');
+				let get_btn = 'btn-signin';
+				if(api.showLoader(get_btn)){
+					// const params = {
+					// 	json : 1,
+					// 	dataset     : {
+					// 		code 			: $('input[name="code"]').value(),
+					// 		validate_code 	: 1 
+					// 	},
+					// 	local 		: 'myinfo',
+					// 	exec        : (res)=>{
+    						
+					// 		console.log(myinfo)
+					// 	},
+					// 	store       : 'myinfo',
+					// 	buttonloader: get_btn,
+					// 	buttonval   : 'Proceed'
+					// }
+					// api.request(params)
+					try {
+						api.myinfo((res)=>{
+							let sub_nav = navigate;
+							if(res.result){
+								console.log("HOME")
+								if(res.advance_ai.face_comparison_status){
+									sub_nav('/compare/result/');
+								}else{
+									sub_nav();
+								}
+							}
+						}, getform.code, { btn : get_btn, val : 'PROCEED'});
+					} catch (error) {
+						api.hideLoader(get_btn, 'PROCEED');
+					}
+					
+				}else{
+					api.notif("Your request is being proceed.", "Please wait a second")
+				}
+                //navigate('/home/');
+            }
+        }
+        $on('pageInit', (e, page)=>{
+            
+        });
+        $on('pageBeforeOut', (e, page)=>{
+			
+        });
+        return $render;
+    };
+  </script>

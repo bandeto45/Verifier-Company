@@ -1,0 +1,249 @@
+<template>
+    <div class="page" data-name="book">
+        <div class="navbar  navbar-style-1">
+            <div class="navbar-inner">
+                <div class="left">
+<!--                     
+                    <a  class="link cus back" style="width: auto; min-width: auto;">
+                    <span class="material-symbols">
+                    arrow_back
+                    </span>
+                    </a> -->
+                </div>
+                <div class="title  ">
+                  
+                  
+                </div>
+                <div class="right" >
+                    
+                </div>
+            </div>
+        </div>
+      <!-- Scrollable page content-->
+        <div class="page-content pt-60">
+            <div class="card  position-fixed z-index-0 no-margin no-shadow border-bottom-style-1 bg-color-primary" style="">
+                <div class="container pt-10 pb-50 text-align-center">
+                    ${myinfo.value.advance_ai.face_comparison_status ? $h` 
+                        ${myinfo.value.advance_ai.face_comparison_status == 'Passed' ? $h` 
+                            <h2 class="no-margin-bottom text-color-green text-align-center margin-horizontal">CONGRATULATIONS!</h2>
+                            <img src="${passed}" alt="" srcset="" class="width-fill text-align-center mt-70 mb-30" />
+                            <p class="text-color-white op6 pt-30 no-margin text-align-center margin-horizontal">
+                                You <strong class=" text-color-green">passed</strong> the verification. You can now proceed and go back to  ${myinfo.value.company_info.name} App.
+                            </p>
+                        
+                        ` : $h` 
+                            ${myinfo.value.advance_ai.face_comparison_status == 'Manual Check' ? $h` 
+                                <h2 class="no-margin-bottom text-color-green text-align-center margin-horizontal">PROCESSING. . .</h2>
+                                <img src="${manual}" alt="" srcset="" class="width-fill  mt-70 mb-30" />
+                                <p class="text-color-white op6 pt-30 no-margin text-align-center margin-horizontal">
+                                    
+                                    It would take 24 to 48 hrs. to verify your submission. For the meantime, you can go back to ${myinfo.value.company_info.name} App and will notify you soon for the results.
+                                </p>
+                            ` : $h` 
+                            <h2 class="no-margin-bottom text-color-green text-align-center margin-horizontal">SORRY!</h2>
+                            <img src="${denied}" alt="" srcset="" class="width-fill  mt-70 mb-30" />
+
+                            <p class="text-color-white op6 pt-30 no-margin  margin-horizontal">
+                                You did not pass the verification process. Make sure to submit a valid ID and try again.
+                            </p>
+
+                                
+
+                            <!-- <a @click="${()=>navigate('/home/', true)}" class="button button-fill color-orange mt-30 button-large">Retake Verification</a>  -->
+                            `}
+                        `}
+                        
+                    ` : $h` 
+                        <h2 class="no-margin-bottom text-color-green text-align-center margin-horizontal">VERIFYING</h2>
+                        <div id="loader"></div>
+
+                        <p class="text-color-white op6 pt-30 no-margin  margin-horizontal">
+                            The ID and Liveness Selfie from the previous steps is now matching, please wait a second. 
+                            
+                        </p>
+                    `}
+                    
+                    
+                    
+                </div>
+            </div>
+            
+            <div class="container mt-50">
+                
+            </div>
+            <p class=" text-color-black margin-horizontal mt-50 fs-12 text-align-center op5">Copyright © 2022 Verifier Company - All Rights Reserved</p>
+            <div class="mt-100"></div>
+        </div>
+    </div>
+  </template>
+  <script>
+    import api from '../js/request.api';
+    import lottie from 'lottie-web';
+    import pairing from '../assets/pairing.json';
+    import manual from '../assets/Manual.png';
+    import denied from '../assets/Denied.png';
+    import passed from '../assets/Passed.png';
+
+    export default (props, {$, $on, $f7, $store, $update, $f7router}) => {
+        const myinfo = $store.getters.myinfo;
+        let iqaBlob_store = $store.getters.iqaBlob;
+        
+        let iqa = $store.getters.iqa;
+        let liveness_res = $store.getters.liveness_res;
+        let face_compare = $store.getters.face_compare;
+        let image_live, image_id;
+        let animation = false;
+
+        let navigate = (path = '/home/')=>{
+            $f7router.navigate(path, { transition: 'f7-cover', clearPreviousHistory  : true })
+        }
+        const tag = '[STEP3]'
+        let try_again = 0;
+        let image = ''
+        
+        const action = {
+            load : ()=>{
+                if(myinfo.value.advance_ai.front_id && myinfo.value.advance_ai.liveness_photo && myinfo.value.advance_ai.livenessId == liveness_res.value.livenessId &&  myinfo.value.advance_ai.idvid == iqa.value.IDVID ){
+                    if(!myinfo.value.advance_ai.face_comparison_status){
+                        console.log(tag+'[myinfo]',myinfo)
+                        action.getBlob(myinfo.value.advance_ai.liveness_photo, myinfo.value.advance_ai.front_id)
+                    }
+                }else{
+                    console.log(tag+'[server]', 'Generating photo...');
+                    console.log(tag+'[server]', liveness_res.value.livenessId);
+                    console.log(tag+'[server]', iqa.value.IDVID);
+                    const dataset = {
+                        livenessId : liveness_res.value.livenessId,
+                        idvid_front_id : iqa.value.IDVID,
+                        idvid_back_id : "",
+                        validate_advance : 1,    
+                        code : myinfo.value.code,
+                        type    :   "liveness",
+                    }
+                    const params = {
+                        json : 1,
+                        dataset     : dataset,
+                        exec        : (res)=>{
+                            if(res.liveness_status=='Passed'){
+                                action.getBlob(res.liveness_photo, res.front_id);
+                                try_again = 0;
+                            }else if(res.liveness_status=='Manual Check'){
+                                try_again = 1;
+                                api.notif( 'It would take 24 to 48 hrs. to verify your submission. For the meantime, you can go back to ${myinfo.value.company_info.name} App and will notify you soon for the results.', 'Your account is being validating.')
+                            }else{
+                                try_again = 0;
+                            }
+                            $update();
+
+                        },
+                        
+                    }
+                    console.log(params);
+                    api.request(params)
+                }
+            },
+            getImgURL      : (url, callback)=>{
+                var xhr = new XMLHttpRequest();
+                xhr.onload = function() {
+                    callback(xhr.response);
+                };
+                console.log(url);
+                console.log(xhr.open('GET', url));
+                xhr.responseType = 'blob';
+                xhr.send();
+            },
+            face_compare : (liveness_image, front_id)=>{
+                console.log('liveness', liveness_image)
+                var formData = new FormData();
+                    formData.append("liveness_image", liveness_image );
+                    formData.append("front_id", front_id );
+                    formData.append("face_comparison", true);
+                    formData.append("code", myinfo.value.code);
+                    formData.append("idvid", iqa.value.IDVID);
+                    formData.append("livenessId", liveness_res.value.livenessId);
+
+
+                    console.log(tag+'[compare][dataset][formdata]',formData)
+                    $update();
+                    //dataset.push()
+                    console.log(api.uri());
+                    $f7.request.post(api.uri(), formData, function (data) {
+                       console.log('pair result : ', data);
+                        let dataJSON = JSON.parse(data);
+                        if(dataJSON.result){
+                            setTimeout(()=>{
+                                api.myinfo((res)=>{
+                                    if(res.advance_ai.face_comparison_status == 'Manual Check'){
+                                        let check_manual =  setInterval(()=>{
+                                            api.myinfo((res)=>{
+                                                clearInterval(check_manual);
+                                                $update();
+                                            });
+                                        }, 5000)
+                                    }
+                                    $update();
+                                });
+                            }, 1000);
+                        }else{
+                            api.notif(dataJSON.message, dataJSON.msg_title)
+                        }
+                       
+                    });
+            },
+            getBlob : (liveness_image, front_id)=>{
+                // image_live = liveness_image;
+                // image_id   = front_id;
+                $update();
+                console.log(tag+'[compare][1st]',front_id)
+                console.log(tag+'[compare][2nd]',liveness_image)
+                
+                // GET ID 
+                const fileName_front_id = 'iqc_'+myinfo.value.code+'.jpg'
+                const fileName_liveness_image = 'liveness_'+myinfo.value.code+'.jpg'
+
+                if(iqaBlob_store.value){ // From STEP 1 OCR blob
+                    console.log('FROM STEP 1', iqaBlob_store.value);
+                    action.getImgURL(liveness_image+'?'+Date.now(), (lvsBlob)=>{
+                        console.log(tag+'[liveness][lvsBlob]', lvsBlob );
+                        action.face_compare(lvsBlob, iqaBlob_store.value);
+                        $update();
+                    });
+                }else{ 
+                    action.getImgURL(front_id+'?'+Date.now(), (iqaBlob)=>{
+                        console.log(tag+'[front_id][iqaBlob]', iqaBlob );
+                        action.getImgURL(liveness_image+'?'+Date.now(), (lvsBlob)=>{
+                            console.log(tag+'[liveness][lvsBlob]', lvsBlob );
+                            action.face_compare(lvsBlob, iqaBlob);
+                            $update();
+                        });
+                    });
+                }
+                
+                
+                
+                
+                
+                
+                
+            }
+        }
+        $on('pageInit', (e, page)=>{
+            api.check_network();
+            action.load();
+            if(!myinfo.value.advance_ai.face_comparison_status){
+                animation = lottie.loadAnimation({
+                    container: document.getElementById('loader'),
+                    renderer: 'svg',
+                    loop: true,
+                    autoplay: true,
+                    animationData : pairing
+                });
+            }
+            
+        });
+        $on('pageBeforeOut', (e, page)=>{
+            if(animation) animation.destroy();
+        });
+        return $render;
+    };
+  </script>
