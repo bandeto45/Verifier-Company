@@ -82,9 +82,9 @@
               <div class="padding">
                   <div class="row">
                       <div class="col-expand">
-                          <p class="no-margin fs-16 fw6 ">Face Comparison </p>
+                          <p class="no-margin fs-16 fw6 ">Verification Process </p>
                           <p class="no-margin fs-13">
-                            The ID and Liveness Selfie from the previous steps will be matched and compared for percentage accuracy. You will be notified for the results in <strong class="text-color-primary">${myinfo.value.company_info.name}</strong> Application.
+                            The ID and Liveness Selfie from the previous steps will be process on verification. You will be notified for the results in <strong class="text-color-primary">${myinfo.value.company_info.name}</strong> Application.
                           </p>
                       </div>
                       <div class="margin-left-half col-auto">

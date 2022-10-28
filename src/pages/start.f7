@@ -25,7 +25,8 @@ export default (props, {$, $on, $f7, $store, $update, $f7router}) => {
                 api.myinfo((res)=>{
                     let sub_nav = navigate;
                     if(res.result){
-                        if(res.advance_ai.face_comparison_status){
+                        console.log(res);
+                        if(res.advance_ai.front_id && res.liveness_photo){
                             sub_nav('/compare/result/');
                         }else{
                             sub_nav();

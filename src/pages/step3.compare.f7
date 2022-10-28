@@ -24,42 +24,18 @@
             <div class="card  position-fixed z-index-0 no-margin no-shadow border-bottom-style-1 bg-color-primary" style="">
                 <div class="container pt-10 pb-50 text-align-center">
                     ${myinfo.value.advance_ai.face_comparison_status ? $h` 
-                        ${myinfo.value.advance_ai.face_comparison_status == 'Passed' ? $h` 
-                            <h2 class="no-margin-bottom text-color-green text-align-center margin-horizontal">CONGRATULATIONS!</h2>
-                            <img src="${passed}" alt="" srcset="" class="width-fill text-align-center mt-70 mb-30" />
-                            <p class="text-color-white op6 pt-30 no-margin text-align-center margin-horizontal">
-                                You <strong class=" text-color-green">passed</strong> the verification. You can now proceed and go back to  ${myinfo.value.company_info.name} App.
-                            </p>
-                        
-                        ` : $h` 
-                            ${myinfo.value.advance_ai.face_comparison_status == 'Manual Check' ? $h` 
-                                <h2 class="no-margin-bottom text-color-green text-align-center margin-horizontal">PROCESSING. . .</h2>
-                                <img src="${manual}" alt="" srcset="" class="width-fill  mt-70 mb-30" />
-                                <p class="text-color-white op6 pt-30 no-margin text-align-center margin-horizontal">
-                                    
-                                    It would take 24 to 48 hrs. to verify your submission. For the meantime, you can go back to ${myinfo.value.company_info.name} App and will notify you soon for the results.
-                                </p>
-                            ` : $h` 
-                            <h2 class="no-margin-bottom text-color-green text-align-center margin-horizontal">SORRY!</h2>
-                            <img src="${denied}" alt="" srcset="" class="width-fill  mt-70 mb-30" />
-
-                            <p class="text-color-white op6 pt-30 no-margin  margin-horizontal">
-                                You did not pass the verification process. Make sure to submit a valid ID and try again.
-                            </p>
-
-                                
-
-                            <!-- <a @click="${()=>navigate('/home/', true)}" class="button button-fill color-orange mt-30 button-large">Retake Verification</a>  -->
-                            `}
-                        `}
+                        <h2 class="no-margin-bottom text-color-green text-align-center margin-horizontal">SUCCESSFULLY SUBMITTED!</h2>
+                        <img src="${manual}" alt="" srcset="" class="width-fill  mt-70 mb-30" />
+                        <p class="text-color-white op6 pt-30 no-margin text-align-center margin-horizontal">
+                            We have received your ID and verification information. You will be notified on your ${myinfo.value.company_info.name} Application of the result.
+                        </p>
                         
                     ` : $h` 
-                        <h2 class="no-margin-bottom text-color-green text-align-center margin-horizontal">VERIFYING</h2>
+                        <h2 class="no-margin-bottom text-color-green text-align-center margin-horizontal">SUBMITTING. . .</h2>
                         <div id="loader"></div>
-
-                        <p class="text-color-white op6 pt-30 no-margin  margin-horizontal">
-                            The ID and Liveness Selfie from the previous steps is now matching, please wait a second. 
+                        <p class="text-color-white op6 pt-30 no-margin text-align-center margin-horizontal">
                             
+                            Your valid ID and Liveness is processing to upload, please wait.
                         </p>
                     `}
                     

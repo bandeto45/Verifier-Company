@@ -1,0 +1,131 @@
+<template>
+    <div class="page" data-name="book">
+        <div class="navbar  navbar-style-1">
+            <div class="navbar-inner">
+                <div class="left">
+<!--                     
+                    <a  class="link cus back" style="width: auto; min-width: auto;">
+                    <span class="material-symbols">
+                    arrow_back
+                    </span>
+                    </a> -->
+                </div>
+                <div class="title  ">
+                  
+                  
+                </div>
+                <div class="right" >
+                    
+                </div>
+            </div>
+        </div>
+      <!-- Scrollable page content-->
+        <div class="page-content pt-60">
+            <div class="card  position-fixed z-index-0 no-margin no-shadow border-bottom-style-1 bg-color-primary" style="">
+                <div class="container pt-10 pb-50 text-align-center">
+                    ${!submitted ? $h` 
+                        <h2 class="no-margin-bottom text-color-green text-align-center margin-horizontal">SUBMITTING. . .</h2>
+                        <div id="loader"></div>
+                        <p class="text-color-white op6 pt-30 no-margin text-align-center margin-horizontal">
+                            
+                            Your valid ID and Liveness is processing to upload, please wait.
+                        </p>
+                    ` : $h` 
+                        <h2 class="no-margin-bottom text-color-green text-align-center margin-horizontal">SUCCESSFULLY SUBMITTED!</h2>
+                        <img src="${manual}" alt="" srcset="" class="width-fill  mt-70 mb-30" />
+                        <p class="text-color-white op6 pt-30 no-margin text-align-center margin-horizontal">
+                            We have received your ID and verification information. You will be notified on your ${myinfo.value.company_info.name} Application of the result.
+                        </p>
+                    `}
+                    
+                </div>
+            </div>
+            
+            <div class="container mt-50">
+                
+            </div>
+            <p class=" text-color-black margin-horizontal mt-50 fs-12 text-align-center op5">Copyright © 2022 Verifier Company - All Rights Reserved</p>
+            <div class="mt-100"></div>
+        </div>
+    </div>
+  </template>
+  <script>
+    import api from '../js/request.api';
+    import lottie from 'lottie-web';
+    import pairing from '../assets/pairing.json';
+    import manual from '../assets/Manual.png';
+    import denied from '../assets/Denied.png';
+    import passed from '../assets/Passed.png';
+
+    export default (props, {$, $on, $f7, $store, $update, $f7router}) => {
+        const myinfo = $store.getters.myinfo;
+        let iqaBlob_store = $store.getters.iqaBlob;
+        
+        let iqa = $store.getters.iqa;
+        let liveness_res = $store.getters.liveness_res;
+        let face_compare = $store.getters.face_compare;
+        let image_live, image_id;
+        let animation = false;
+        let submitted = 0;
+
+        let navigate = (path = '/home/')=>{
+            $f7router.navigate(path, { transition: 'f7-cover', clearPreviousHistory  : true })
+        }
+        const tag = '[STEP3]'
+        let try_again = 0;
+        let image = ''
+        
+        const action = {
+            load : ()=>{
+                if(myinfo.value.advance_ai.front_id && myinfo.value.advance_ai.liveness_photo && myinfo.value.advance_ai.livenessId == liveness_res.value.livenessId &&  myinfo.value.advance_ai.idvid == iqa.value.IDVID ){
+                    console.log(tag+'[server]', 'Uploaded photo...');
+                    submitted = 1; 
+                    $update();
+                }else{
+                    console.log(tag+'[server]', 'Generating photo...');
+                    console.log(tag+'[server]', liveness_res.value.livenessId);
+                    console.log(tag+'[server]', iqa.value.IDVID);
+                    const dataset = {
+                        livenessId : liveness_res.value.livenessId,
+                        idvid_front_id : iqa.value.IDVID,
+                        idvid_back_id : "",
+                        validate_advance : 1,    
+                        code : myinfo.value.code,
+                        type    :   "liveness",
+                    }
+                    const params = {
+                        json : 1,
+                        dataset     : dataset,
+                        exec        : (res)=>{
+                            setTimeout(()=>{
+                                submitted = 1; 
+                                $update();
+                            }, 3000)
+                        },
+                        
+                    }
+                    console.log(params);
+                    api.request(params)
+                }
+            }
+        }
+        $on('pageInit', (e, page)=>{
+            api.check_network();
+            action.load();
+            if(!myinfo.value.advance_ai.face_comparison_status){
+                animation = lottie.loadAnimation({
+                    container: document.getElementById('loader'),
+                    renderer: 'svg',
+                    loop: true,
+                    autoplay: true,
+                    animationData : pairing
+                });
+            }
+            
+        });
+        $on('pageBeforeOut', (e, page)=>{
+            if(animation) animation.destroy();
+        });
+        return $render;
+    };
+  </script>
